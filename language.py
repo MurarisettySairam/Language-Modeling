@@ -180,8 +180,13 @@ Parameters: int ; list of strs ; list of floats ; list of strs
 Returns: dict mapping strs to floats
 '''
 def getTopWords(count, words, probs, ignoreList):
-    return
-
+    d1=dict(zip(words,probs))
+    l=dict(sorted(d1.items(),key=lambda x:x[1],reverse=True))
+    d2={}
+    for key,values in l.items():
+        if key not in ignoreList and len(d2)<count:
+            d2[key]=values
+    return d2
 
 '''
 generateTextFromUnigrams(count, words, probs)
@@ -359,7 +364,8 @@ if __name__ == "__main__":
     # test.testCountBigrams()
     # test.testBuildUniformProbs()
     # test.testBuildUnigramProbs()
-    test.testBuildBigramProbs()
+    # test.testBuildBigramProbs()
+    test.testGetTopWords()
     ## Uncomment these for Week 2 ##
 """
     print("\n" + "#"*15 + " WEEK 2 TESTS " +  "#" * 16 + "\n")
