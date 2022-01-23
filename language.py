@@ -78,8 +78,9 @@ Returns: list of strs
 def getStartWords(corpus):
     l=[]
     for i in corpus:
-        l.append(i[0]) 
-    return list(set(l))
+        if i[0] not in l:
+            l.append(i[0]) 
+    return l
 
 
 '''
@@ -158,7 +159,7 @@ Parameters: dict mapping strs to ints ; dict mapping strs to (dicts mapping strs
 Returns: dict mapping strs to (dicts mapping strs to (lists of values))
 '''
 def buildBigramProbs(unigramCounts, bigramCounts):
-    d={}      
+    d={}     
     for i in bigramCounts:
         l=unigramCounts[i]
         l2=[]
@@ -180,7 +181,7 @@ Parameters: int ; list of strs ; list of floats ; list of strs
 Returns: dict mapping strs to floats
 '''
 def getTopWords(count, words, probs, ignoreList):
-    d1=dict(zip(words,probs))
+    d1=dict(zip(words,probs))                   #[("hi",0.4),("there",0.4),("hello",0.2)]
     l=dict(sorted(d1.items(),key=lambda x:x[1],reverse=True))
     d2={}
     for key,values in l.items():
@@ -195,8 +196,15 @@ Parameters: int ; list of strs ; list of floats
 Returns: str
 '''
 from random import choices
-def generateTextFromUnigrams(count, words, probs):
-    return
+def generateTextFromUnigrams(count, words, probs): 
+    l=[]
+    for i in range (count):
+        l.append(choices(words, weights=probs)) #"hello world hello"
+    s="" 
+    for i in l:
+        for j in i:
+            s=s+" " +j 
+    return s
 
 
 '''
@@ -365,7 +373,8 @@ if __name__ == "__main__":
     # test.testBuildUniformProbs()
     # test.testBuildUnigramProbs()
     # test.testBuildBigramProbs()
-    test.testGetTopWords()
+    # test.testGetTopWords()
+    test.testGenerateTextFromUnigrams()
     ## Uncomment these for Week 2 ##
 """
     print("\n" + "#"*15 + " WEEK 2 TESTS " +  "#" * 16 + "\n")
