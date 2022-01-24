@@ -17,7 +17,14 @@ Parameters: str
 Returns: 2D list of strs
 '''
 def loadBook(filename):
-    return
+    l=[]
+    o=open(filename,"r").read()
+    slines=o.split("\n")
+    for i in slines:
+        splitword=i.split(" ")
+        if splitword !=[""]:
+            l.append(splitword)
+    return l
 
 
 '''
@@ -27,8 +34,8 @@ Parameters: 2D list of strs
 Returns: int
 '''
 def getCorpusLength(corpus):
-    return
-
+    total_length = sum(len(row) for row in corpus) 
+    return total_length
 
 '''
 buildVocabulary(corpus)
@@ -37,8 +44,12 @@ Parameters: 2D list of strs
 Returns: list of strs
 '''
 def buildVocabulary(corpus):
-    return
-
+    list=[]
+    for i in corpus:
+        for j in i:
+            if j not in list:
+                list.append(j)
+    return list
 
 '''
 countUnigrams(corpus)
@@ -47,7 +58,15 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to ints
 '''
 def countUnigrams(corpus):
-    return
+    count_unigrams={}
+    list=[]
+    for i in corpus:
+        for j in i:
+            list.append(j)
+    for k in list:
+        if k not in count_unigrams:
+            count_unigrams[k]=list.count(k)
+    return count_unigrams
 
 
 '''
@@ -57,7 +76,11 @@ Parameters: 2D list of strs
 Returns: list of strs
 '''
 def getStartWords(corpus):
-    return
+    l=[]
+    for i in corpus:
+        if i[0] not in l:
+            l.append(i[0]) 
+    return l
 
 
 '''
@@ -67,8 +90,14 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to ints
 '''
 def countStartWords(corpus):
-    return
-
+    count_startword={}
+    l=[]
+    for i in corpus:
+        l.append(i[0])
+    for k in l:
+        if k not in count_startword:
+             count_startword[k]=l.count(k)
+    return count_startword
 
 '''
 countBigrams(corpus)
@@ -77,7 +106,17 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to (dicts mapping strs to ints)
 '''
 def countBigrams(corpus):
-    return
+    d={}
+    for p in range (len(corpus)):
+        for j in range (len(corpus[p])-1):
+            v = corpus[p][j]
+            v2 = corpus[p][j+1]
+            if v not in d:
+                d[v]={}
+            if v2 not in d[v]:
+                d[v][v2]=0
+            d[v][v2]+=1
+    return d
 
 
 ### WEEK 2 ###
@@ -89,7 +128,12 @@ Parameters: list of strs
 Returns: list of floats
 '''
 def buildUniformProbs(unigrams):
-    return
+    l=[]
+    length=len(unigrams)
+    for i in unigrams:
+        s=1/length
+        l.append(s)
+    return l
 
 
 '''
@@ -99,7 +143,13 @@ Parameters: list of strs ; dict mapping strs to ints ; int
 Returns: list of floats
 '''
 def buildUnigramProbs(unigrams, unigramCounts, totalCount):
-    return
+    l=[]
+    for i in unigrams:
+        for j in unigramCounts:
+            if i==j:
+                c=unigramCounts[j]/totalCount
+                l.append(c)
+    return l
 
 
 '''
@@ -109,7 +159,19 @@ Parameters: dict mapping strs to ints ; dict mapping strs to (dicts mapping strs
 Returns: dict mapping strs to (dicts mapping strs to (lists of values))
 '''
 def buildBigramProbs(unigramCounts, bigramCounts):
-    return
+    d={}     
+    for i in bigramCounts:
+        l=unigramCounts[i]
+        l2=[]
+        l3=[]
+        for j in bigramCounts[i]:
+            l2.append(j)
+            l3.append(bigramCounts[i][j]/l)
+        d1={}
+        d1["words"]=l2
+        d1["probs"]=l3
+        d[i]=d1
+    return d
 
 
 '''
@@ -119,8 +181,13 @@ Parameters: int ; list of strs ; list of floats ; list of strs
 Returns: dict mapping strs to floats
 '''
 def getTopWords(count, words, probs, ignoreList):
-    return
-
+    d1=dict(zip(words,probs))                   #[("hi",0.4),("there",0.4),("hello",0.2)]
+    l=dict(sorted(d1.items(),key=lambda x:x[1],reverse=True))
+    d2={}
+    for key,values in l.items():
+        if key not in ignoreList and len(d2)<count:
+            d2[key]=values
+    return d2
 
 '''
 generateTextFromUnigrams(count, words, probs)
@@ -129,8 +196,15 @@ Parameters: int ; list of strs ; list of floats
 Returns: str
 '''
 from random import choices
-def generateTextFromUnigrams(count, words, probs):
-    return
+def generateTextFromUnigrams(count, words, probs): 
+    l=[]
+    for i in range (count):
+        l.append(choices(words, weights=probs)) #"hello world hello"
+    s="" 
+    for i in l:
+        for j in i:
+            s=s+" " +j 
+    return s
 
 
 '''
@@ -140,7 +214,20 @@ Parameters: int ; list of strs ; list of floats ; dict mapping strs to (dicts ma
 Returns: str
 '''
 def generateTextFromBigrams(count, startWords, startWordProbs, bigramProbs):
-    return
+    s=""
+    l=[]   
+    for i in range (count):
+        if len(l)==0 or l[-1]==".":
+            j=choices(startWords,startWordProbs) #["dear"]
+            l=l+j
+        else:
+            last_word=l[-1]
+            word=bigramProbs[last_word]["words"]  #[ "sir", "madam" ]
+            prob=bigramProbs[last_word]["probs"]   #[0.5, 0.5] 
+            l=l+choices(word,prob)
+    for i in l:
+        s=s+" "+i
+    return s
 
 
 ### WEEK 3 ###
@@ -157,8 +244,12 @@ Parameters: 2D list of strs
 Returns: None
 '''
 def graphTop50Words(corpus):
+    c=countUnigrams(corpus)
+    w=buildVocabulary(corpus)
+    p=buildUnigramProbs(w,c,getCorpusLength(corpus))
+    top=getTopWords(50, w, p, ignore)
+    barPlot(top, "The top 50 words")
     return
-
 
 '''
 graphTopStartWords(corpus)
@@ -167,6 +258,11 @@ Parameters: 2D list of strs
 Returns: None
 '''
 def graphTopStartWords(corpus):
+    c=countStartWords(corpus)
+    w=getStartWords(corpus)
+    p=buildUnigramProbs(w,c,getCorpusLength(corpus))
+    top=getTopWords(50, w, p, ignore)
+    barPlot(top, "The top start words")
     return
 
 
@@ -177,6 +273,11 @@ Parameters: 2D list of strs ; str
 Returns: None
 '''
 def graphTopNextWords(corpus, word):
+    cui=countUnigrams(corpus)
+    cbi=countBigrams(corpus)
+    p=buildBigramProbs(cui,cbi)
+    top=getTopWords(10, p[word]["words"], p[word]["probs"], ignore)
+    barPlot(top, "The top next words")
     return
 
 
@@ -187,7 +288,41 @@ Parameters: 2D list of strs ; 2D list of strs ; int
 Returns: dict mapping strs to (lists of values)
 '''
 def setupChartData(corpus1, corpus2, topWordCount):
-    return
+    top_words=[]
+    corpus1_p=[]
+    corpus2_p=[]
+    d={}
+
+    count1=countUnigrams(corpus1)
+    words1=buildVocabulary(corpus1)
+    probs1=buildUnigramProbs(words1,count1,getCorpusLength(corpus1))
+    top1 =getTopWords(topWordCount, words1, probs1, ignore)
+    
+
+    count2=countUnigrams(corpus2)
+    words2=buildVocabulary(corpus2)
+    probs2=buildUnigramProbs(words2,count2,getCorpusLength(corpus2))
+    top2=getTopWords(topWordCount, words2, probs2, ignore)
+    
+    top_words=top_words+list(top1.keys())
+    for i in top2.keys():
+        if i not in top_words:
+            top_words.append(i)
+    for j in top_words:
+        if j in words1:
+            r=words1.index(j)
+            corpus1_p.append(probs1[r])
+        else:
+            corpus1_p.append(0)
+        if j in words2:
+            z=words2.index(j)
+            corpus2_p.append(probs2[z])
+        else:
+            corpus2_p.append(0)
+    d["topWords"]=top_words
+    d["corpus1Probs"]=corpus1_p
+    d["corpus2Probs"]=corpus2_p
+    return d
 
 
 '''
@@ -197,6 +332,12 @@ Parameters: 2D list of strs ; str ; 2D list of strs ; str ; int ; str
 Returns: None
 '''
 def graphTopWordsSideBySide(corpus1, name1, corpus2, name2, numWords, title):
+    i=setupChartData(corpus1,corpus2,numWords)
+    x=i["topWords"]
+    v1=i["corpus1Probs"]
+    v2=i["corpus2Probs"]
+    sideBySideBarPlots(x, v1, v2, name1, name2, title)
+
     return
 
 
@@ -207,6 +348,11 @@ Parameters: 2D list of strs ; 2D list of strs ; int ; str
 Returns: None
 '''
 def graphTopWordsInScatterplot(corpus1, corpus2, numWords, title):
+    j=setupChartData(corpus1,corpus2,numWords)
+    l=j["topWords"]
+    x_scatterplot=j["corpus1Probs"]
+    y_scatterplot=j["corpus2Probs"]
+    scatterPlot(x_scatterplot,y_scatterplot, l, title)
     return
 
 
@@ -285,12 +431,25 @@ def scatterPlot(xs, ys, labels, title):
 
 # This code runs the test cases to check your work
 if __name__ == "__main__":
-    print("\n" + "#"*15 + " WEEK 1 TESTS " +  "#" * 16 + "\n")
-    test.week1Tests()
-    print("\n" + "#"*15 + " WEEK 1 OUTPUT " + "#" * 15 + "\n")
-    test.runWeek1()
-
+    # print("\n" + "#"*15 + " WEEK 1 TESTS " +  "#" * 16 + "\n")
+    # # test.week1Tests()
+    # print("\n" + "#"*15 + " WEEK 1 OUTPUT " + "#" * 15 + "\n")
+    # # test.runWeek1()
+    # test.testLoadBook()
+    # test.testGetCorpusLength()
+    # test.testBuildVocabulary()
+    # test.testCountUnigrams()
+    # test.testGetStartWords()
+    # test.testCountStartWords()
+    # test.testCountBigrams()
+    # test.testBuildUniformProbs()
+    # test.testBuildUnigramProbs()
+    # test.testBuildBigramProbs()
+    # test.testGetTopWords()
+    # test.testGenerateTextFromBigrams()
     ## Uncomment these for Week 2 ##
+    test.testSetupChartData()
+    test.runWeek3()
 """
     print("\n" + "#"*15 + " WEEK 2 TESTS " +  "#" * 16 + "\n")
     test.week2Tests()
