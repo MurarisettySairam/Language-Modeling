@@ -17,7 +17,14 @@ Parameters: str
 Returns: 2D list of strs
 '''
 def loadBook(filename):
-    return
+    l=[]
+    o=open(filename,"r").read()
+    slines=o.split("\n")
+    for i in slines:
+        splitword=i.split(" ")
+        if splitword !=[""]:
+            l.append(splitword)
+    return l
 
 
 '''
@@ -27,8 +34,8 @@ Parameters: 2D list of strs
 Returns: int
 '''
 def getCorpusLength(corpus):
-    return
-
+    total_length = sum(len(row) for row in corpus) 
+    return total_length
 
 '''
 buildVocabulary(corpus)
@@ -37,8 +44,12 @@ Parameters: 2D list of strs
 Returns: list of strs
 '''
 def buildVocabulary(corpus):
-    return
-
+    list=[]
+    for i in corpus:
+        for j in i:
+            if j not in list:
+                list.append(j)
+    return list
 
 '''
 countUnigrams(corpus)
@@ -47,7 +58,15 @@ Parameters: 2D list of strs
 Returns: dict mapping strs to ints
 '''
 def countUnigrams(corpus):
-    return
+    count_unigrams={}
+    list=[]
+    for i in corpus:
+        for j in i:
+            list.append(j)
+    for k in list:
+        if k not in count_unigrams:
+            count_unigrams[k]=list.count(k)
+    return count_unigrams
 
 
 '''
@@ -285,10 +304,14 @@ def scatterPlot(xs, ys, labels, title):
 
 # This code runs the test cases to check your work
 if __name__ == "__main__":
-    print("\n" + "#"*15 + " WEEK 1 TESTS " +  "#" * 16 + "\n")
-    test.week1Tests()
-    print("\n" + "#"*15 + " WEEK 1 OUTPUT " + "#" * 15 + "\n")
-    test.runWeek1()
+    # print("\n" + "#"*15 + " WEEK 1 TESTS " +  "#" * 16 + "\n")
+    # # test.week1Tests()
+    # print("\n" + "#"*15 + " WEEK 1 OUTPUT " + "#" * 15 + "\n")
+    # # test.runWeek1()
+    # test.testLoadBook()
+    # test.testGetCorpusLength()
+    # test.testBuildVocabulary()
+    test.testCountUnigrams()
 
     ## Uncomment these for Week 2 ##
 """
